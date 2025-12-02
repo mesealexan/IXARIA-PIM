@@ -13,6 +13,10 @@ const appState = {
         part: [],
         materialCollection: [],
         materialColor: []
+    },
+    collapsedSections: {
+        sidebar: {}, // e.g., { product: true, part: false }
+        formGroups: {} // e.g., { "basicInformation": false, "marketingData": true }
     }
 };
 

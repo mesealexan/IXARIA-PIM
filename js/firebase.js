@@ -39,16 +39,14 @@ async function loadStateFromFirebaseStorage() {
             if (remote.data && typeof remote.data === "object") {
                 appState.data = Object.assign(appState.data, remote.data);
             }
-            if (remote.selectedIds && typeof remote.selectedIds === "object") {
-                appState.selectedIds = Object.assign(appState.selectedIds, remote.selectedIds);
-            }
+            // Don't restore selectedIds - always start with nothing selected
+            // if (remote.selectedIds && typeof remote.selectedIds === "object") {
+            //     appState.selectedIds = Object.assign(appState.selectedIds, remote.selectedIds);
+            // }
         }
-        // Fallback: if no selection, select first existing item per type
-        TYPE_META.forEach(meta => {
-            const list = appState.data[meta.key] || [];
-            if (!appState.selectedIds[meta.key] && list.length > 0) {
-                appState.selectedIds[meta.key] = list[0].id;
-            }
+        // Clear all selections on load - user must explicitly select an item
+        Object.keys(appState.selectedIds).forEach(key => {
+            appState.selectedIds[key] = null;
         });
     } catch (e) {
         console.warn("Failed to load data from Firebase Storage", e);

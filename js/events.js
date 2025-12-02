@@ -4,19 +4,51 @@ function attachSidebarEvents() {
     const sidebar = document.getElementById("sidebar");
     if (!sidebar) return;
 
-    // Events: switch type (click header)
+    // Toggle collapse/expand function
+    function toggleSidebarSection(type) {
+        if (!type) return;
+        if (appState.collapsedSections.sidebar[type] === false) {
+            appState.collapsedSections.sidebar[type] = true;
+        } else {
+            appState.collapsedSections.sidebar[type] = false;
+        }
+        renderApp();
+    }
+
+    // Events: collapse/expand toggle (button)
+    sidebar.querySelectorAll(".collapse-toggle").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const t = btn.getAttribute("data-type");
+            toggleSidebarSection(t);
+        });
+    });
+
+    // Events: collapse/expand toggle (clicking on name)
+    sidebar.querySelectorAll(".sidebar-section-name").forEach(span => {
+        span.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const t = span.getAttribute("data-type");
+            toggleSidebarSection(t);
+        });
+    });
+
+    // Events: switch type (click header, but not the collapse button, name, or add button)
     sidebar.querySelectorAll(".sidebar-section-header").forEach(el => {
         el.addEventListener("click", (e) => {
+            // Don't trigger if clicking the collapse button, name, or add button
+            if (e.target.closest(".collapse-toggle") || e.target.closest(".sidebar-section-name") || e.target.closest(".add-item-btn")) {
+                return;
+            }
             const t = el.getAttribute("data-type");
             if (!t) return;
             appState.currentType = t;
             const list = appState.data[t] || [];
             // For main types, clicking the header should show the card list,
             // so we clear the current selection to enter "list view".
+            // No auto-selection - user must explicitly select an item
             if (["product", "part", "materialCollection", "materialColor"].includes(t)) {
                 appState.selectedIds[t] = null;
-            } else if (!appState.selectedIds[t] && list.length > 0) {
-                appState.selectedIds[t] = list[0].id;
             }
             renderApp();
         });
@@ -233,6 +265,54 @@ function attachFormEvents() {
             }
 
             setValueByPath(item.data, path, newValue);
+        });
+    });
+
+    // Toggle form group collapse/expand function (only for top-level groups)
+    function toggleFormGroup(groupKey) {
+        if (!groupKey) return;
+        // Only allow collapse/expand for top-level groups (those without a dot in the path)
+        if (groupKey.includes(".")) return; // Nested groups are not collapsible
+        if (appState.collapsedSections.formGroups[groupKey] === false) {
+            appState.collapsedSections.formGroups[groupKey] = true;
+        } else {
+            appState.collapsedSections.formGroups[groupKey] = false;
+        }
+        renderContent();
+    }
+
+    // Form group collapse/expand toggle (button) - only exists for top-level groups
+    content.querySelectorAll(".group-collapse-toggle").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const groupKey = btn.getAttribute("data-group-key");
+            toggleFormGroup(groupKey);
+        });
+    });
+
+    // Form group collapse/expand toggle (clicking on name) - only for top-level groups
+    content.querySelectorAll(".group-title-name").forEach(span => {
+        span.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const groupKey = span.getAttribute("data-group-key");
+            // Only allow collapse if it's a top-level group (no dot in path)
+            if (!groupKey || groupKey.includes(".")) return;
+            toggleFormGroup(groupKey);
+        });
+    });
+
+    // Form group collapse/expand toggle (clicking on title container) - only for top-level groups
+    content.querySelectorAll(".group-title").forEach(title => {
+        title.addEventListener("click", (e) => {
+            // Don't trigger if clicking the button or span directly (they have their own handlers)
+            if (e.target.closest(".group-collapse-toggle") || e.target.closest(".group-title-name")) {
+                return;
+            }
+            e.stopPropagation();
+            const groupKey = title.getAttribute("data-group-key");
+            // Only allow collapse if it's a top-level group (no dot in path)
+            if (!groupKey || groupKey.includes(".")) return;
+            toggleFormGroup(groupKey);
         });
     });
 
@@ -561,7 +641,7 @@ function handleDeleteItem(typeKey, id) {
     appState.data[typeKey] = list;
 
     if (appState.selectedIds[typeKey] === id) {
-        appState.selectedIds[typeKey] = list.length ? list[0].id : null;
+        appState.selectedIds[typeKey] = null;
     }
     renderApp();
 }
