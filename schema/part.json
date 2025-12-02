@@ -1,0 +1,261 @@
+{
+    "part": {
+        "basicModelInformation": {
+            "modelName": {
+                "type": "string"
+            },
+            "variantSKU": {
+                "type": "string"
+            },
+            "brand": {
+                "type": "string"
+            },
+            "collection": {
+                "type": "string"
+            },
+            "launchSeasonYear": {
+                "type": "string"
+            }
+        },
+        "sewing": {
+            "sewingType": {
+                "type": "string"
+            },
+            "sewingColor": {
+                "type": "string"
+            },
+            "stitchDensity": {
+                "type": "number",
+                "unit": "stitches per inch/cm"
+            },
+            "reinforcementType": {
+                "type": "enum | string",
+                "values": [
+                    "edge reinforcement",
+                    "piping",
+                    "double stitch"
+                ]
+            }
+        },
+        "comfortFilling": {
+            "seatCushionCore": {
+                "type": "string"
+            },
+            "backCushionCore": {
+                "type": "string"
+            },
+            "suspensionSystem": {
+                "type": "string"
+            },
+            "comfortRating": {
+                "type": "enum",
+                "values": [
+                    "soft",
+                    "medium",
+                    "firm"
+                ]
+            },
+            "foamDensity": {
+                "type": "number",
+                "unit": "kg/m3 or lb/ft3"
+            },
+            "foamFirmnessILD": {
+                "type": "number",
+                "unit": "ILD"
+            },
+            "layerCompositionDiagram": {
+                "type": "string",
+                "format": "asset-id or URL"
+            }
+        },
+        "featuresFunctions": {
+            "recliningMechanism": {
+                "type": "enum",
+                "values": [
+                    "none",
+                    "manual",
+                    "power"
+                ]
+            },
+            "sofaBedMechanism": {
+                "type": "string"
+            },
+            "sofaBedMattressSize": {
+                "type": "string",
+                "note": "e.g. per length configuration"
+            },
+            "storage": {
+                "type": "enum | string",
+                "values": [
+                    "none",
+                    "under-seat",
+                    "in base"
+                ]
+            },
+            "adjustableHeadrests": {
+                "type": "boolean"
+            },
+            "removableSeatCushions": {
+                "type": "boolean"
+            },
+            "removableBackCushions": {
+                "type": "boolean"
+            },
+            "modularConnections": {
+                "type": "array<string>",
+                "note": "hooks, rails, docking types"
+            },
+            "usbPowerOptions": {
+                "type": "array<string>"
+            },
+            "heatMassageOptions": {
+                "type": "array<string>"
+            }
+        },
+        "frameConstruction": {
+            "frameMaterialConstruction": {
+                "type": "string"
+            },
+            "joineryType": {
+                "type": "string"
+            },
+            "frameWarrantyYears": {
+                "type": "number | null"
+            },
+            "woodCertification": {
+                "type": "enum | string",
+                "values": [
+                    "FSC",
+                    "PEFC",
+                    "none"
+                ]
+            },
+            "recycledContentPercent": {
+                "type": "number",
+                "range": "0-100"
+            },
+            "metalGauge": {
+                "type": "string"
+            }
+        },
+        "sizeDimensions": {
+            "totalWidthCm": {
+                "type": "object",
+                "properties": {
+                    "min": {
+                        "type": "number | null"
+                    },
+                    "max": {
+                        "type": "number | null"
+                    },
+                    "increment": {
+                        "type": "number | null"
+                    }
+                }
+            },
+            "totalDepthCm": {
+                "type": "object",
+                "properties": {
+                    "min": {
+                        "type": "number | null"
+                    },
+                    "max": {
+                        "type": "number | null"
+                    },
+                    "increment": {
+                        "type": "number | null"
+                    }
+                }
+            },
+            "totalHeightCm": {
+                "type": "number | null"
+            },
+            "seatHeightCm": {
+                "type": "number | null"
+            },
+            "seatDepthCm": {
+                "type": "number | null"
+            },
+            "armHeightCm": {
+                "type": "number | null"
+            },
+            "armWidthCm": {
+                "type": "number | null"
+            },
+            "backHeightCm": {
+                "type": "number | null"
+            },
+            "backWidthCm": {
+                "type": "number | null"
+            },
+            "legHeightCm": {
+                "type": "number | null"
+            },
+            "numberOfLegs": {
+                "type": "number | null"
+            },
+            "numberOfSeats": {
+                "type": "enum | string",
+                "values": [
+                    "1",
+                    "2",
+                    "2.5",
+                    "3",
+                    "3.5",
+                    "custom"
+                ]
+            },
+            "toleranceRangeCm": {
+                "type": "number",
+                "note": "+/- cm"
+            }
+        },
+        "deliveryConstraints": {
+            "assembledDimensions": {
+                "type": "object",
+                "properties": {
+                    "widthCm": {
+                        "type": "number | null"
+                    },
+                    "depthCm": {
+                        "type": "number | null"
+                    },
+                    "heightCm": {
+                        "type": "number | null"
+                    }
+                }
+            },
+            "assembledWeightKg": {
+                "type": "number | null"
+            },
+            "packageDimensionsWeight": {
+                "type": "object<any>",
+                "note": "already in Packaging & Logistics – reference or override"
+            },
+            "heaviestBoxWeightKg": {
+                "type": "number | null"
+            },
+            "minimumDoorWidthRequiredCm": {
+                "type": "number | null"
+            },
+            "minimumStaircaseWidthCm": {
+                "type": "number | null"
+            },
+            "fitsInElevator": {
+                "type": "boolean"
+            },
+            "assemblyRequired": {
+                "type": "boolean"
+            },
+            "toolsRequired": {
+                "type": "array<string>"
+            },
+            "assemblyTimeMinutes": {
+                "type": "number | null"
+            },
+            "numberOfPeopleRequiredForLifting": {
+                "type": "number | null"
+            }
+        }
+    }
+}

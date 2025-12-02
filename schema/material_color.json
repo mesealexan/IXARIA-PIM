@@ -1,0 +1,72 @@
+{
+    "materialColor": {
+        "basicColorInformation": {
+            "colorName": {
+                "type": "string"
+            },
+            "internalCode": {
+                "type": "string"
+            }
+        },
+        "visualMarketingData": {
+            "coverImage": {
+                "type": "string"
+            },
+            "thumbnail": {
+                "type": "string"
+            },
+            "realPhotos": {
+                "type": "array<string>",
+                "note": "macro + context shots"
+            },
+            "colorValues": {
+                "hex": {
+                    "type": "string",
+                    "format": "#RRGGBB"
+                },
+                "rgb": {
+                    "type": "object",
+                    "properties": {
+                        "r": {
+                            "type": "number",
+                            "range": "0-255"
+                        },
+                        "g": {
+                            "type": "number",
+                            "range": "0-255"
+                        },
+                        "b": {
+                            "type": "number",
+                            "range": "0-255"
+                        }
+                    }
+                },
+                "lab": {
+                    "type": "object",
+                    "properties": {
+                        "l": {
+                            "type": "number"
+                        },
+                        "a": {
+                            "type": "number"
+                        },
+                        "b": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "pantoneOrMatchingCode": {
+                "type": "string"
+            },
+            "glossLevel": {
+                "type": "string | number",
+                "note": "for leather, wood, lacquered surfaces"
+            },
+            "patternOrientation": {
+                "type": "string",
+                "note": "e.g. vertical / horizontal / multi-directional"
+            }
+        }
+    }
+}
