@@ -2,6 +2,8 @@
 
 let firebaseApp = null;
 let firebaseStorage = null;
+// Make firebaseStorage accessible globally for utility functions
+window.firebaseStorage = null;
 
 (function initFirebase() {
     try {
@@ -13,6 +15,7 @@ let firebaseStorage = null;
             }
             if (firebase.storage) {
                 firebaseStorage = firebase.storage();
+                window.firebaseStorage = firebaseStorage; // Make it globally accessible
             }
         } else {
             console.info("Firebase config not set – skipping cloud storage init.");

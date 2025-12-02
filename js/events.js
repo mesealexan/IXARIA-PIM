@@ -406,6 +406,22 @@ function attachFormEvents() {
         });
     });
 
+    // Preview buttons for images and videos
+    content.querySelectorAll(".thumb-preview-btn").forEach(btn => {
+        // Prevent drag when clicking preview button
+        btn.addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+        });
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            const type = btn.getAttribute("data-type");
+            const src = btn.getAttribute("data-src");
+            if (!type || !src) return;
+            openPreviewModal(type, src);
+        });
+    });
+
     // Drag and drop reordering for thumbnails
     let draggedThumb = null;
     let draggedIndex = null;
@@ -552,5 +568,66 @@ function handleDeleteItem(typeKey, id) {
 
 async function handleSaveClick() {
     await saveStateToFirebaseStorage();
+}
+
+// ---- PREVIEW MODAL ------------------------------------------------------
+
+let modalCloseHandler = null;
+let modalEscapeHandler = null;
+
+function openPreviewModal(type, src) {
+    const modal = document.getElementById("previewModal");
+    const modalImage = document.getElementById("previewModalImage");
+    const modalVideo = document.getElementById("previewModalVideo");
+    const modalClose = document.getElementById("previewModalClose");
+    const modalOverlay = modal ? modal.querySelector(".preview-modal-overlay") : null;
+
+    if (!modal || !modalImage || !modalVideo || !modalClose) return;
+
+    // Hide both initially
+    modalImage.style.display = "none";
+    modalVideo.style.display = "none";
+
+    if (type === "image") {
+        modalImage.src = src;
+        modalImage.style.display = "block";
+    } else if (type === "video") {
+        modalVideo.src = src;
+        modalVideo.style.display = "block";
+    }
+
+    modal.style.display = "flex";
+
+    // Close handlers - remove old ones if they exist
+    const closeModal = () => {
+        modal.style.display = "none";
+        modalImage.src = "";
+        modalVideo.src = "";
+        modalVideo.pause();
+    };
+
+    if (modalCloseHandler) {
+        modalClose.removeEventListener("click", modalCloseHandler);
+    }
+    if (modalOverlay && modalCloseHandler) {
+        modalOverlay.removeEventListener("click", modalCloseHandler);
+    }
+    if (modalEscapeHandler) {
+        document.removeEventListener("keydown", modalEscapeHandler);
+    }
+
+    modalCloseHandler = closeModal;
+    modalClose.addEventListener("click", modalCloseHandler);
+    if (modalOverlay) {
+        modalOverlay.addEventListener("click", modalCloseHandler);
+    }
+
+    // Close on Escape key
+    modalEscapeHandler = (e) => {
+        if (e.key === "Escape") {
+            closeModal();
+        }
+    };
+    document.addEventListener("keydown", modalEscapeHandler);
 }
 

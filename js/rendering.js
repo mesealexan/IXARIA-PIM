@@ -61,7 +61,9 @@ function buildFieldHtml(labelKey, schema, value, path) {
         images.forEach((src, index) => {
             html += `<div class="thumb" draggable="true" data-path="${escapeHtml(path)}" data-index="${index}">`;
             html += `<img src="${escapeHtml(src)}" draggable="false" />`;
+            html += `<div class="thumb-size" data-src="${escapeHtml(src)}" data-type="image">Loading...</div>`;
             html += `<button type="button" class="thumb-remove-btn" data-path="${escapeHtml(path)}" data-index="${index}" data-src="${escapeHtml(src)}" title="Remove image">×</button>`;
+            html += `<button type="button" class="thumb-preview-btn" data-type="image" data-src="${escapeHtml(src)}" title="Preview image">👁</button>`;
             html += `</div>`;
         });
         html += `</div></div>`;
@@ -83,10 +85,14 @@ function buildFieldHtml(labelKey, schema, value, path) {
           <div class="thumbs" data-path="${escapeHtml(path)}">
       `;
         videos.forEach((src, index) => {
-            const labelText = src ? (src.split("/").slice(-1)[0] || "Video") : "Video";
+            const thumbId = `video-thumb-${path.replace(/\./g, "-")}-${index}`;
             html += `<div class="thumb" data-path="${escapeHtml(path)}" data-index="${index}">`;
-            html += `<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;text-align:center;padding:4px;box-sizing:border-box;">${escapeHtml(labelText)}</div>`;
+            html += `<div class="video-thumb-container" id="${escapeHtml(thumbId)}" data-video-src="${escapeHtml(src)}">`;
+            html += `<div class="video-thumb-placeholder" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.7rem;text-align:center;padding:4px;box-sizing:border-box;">Loading...</div>`;
+            html += `</div>`;
+            html += `<div class="thumb-size" data-src="${escapeHtml(src)}" data-type="video">Loading...</div>`;
             html += `<button type="button" class="thumb-remove-btn" data-path="${escapeHtml(path)}" data-index="${index}" data-src="${escapeHtml(src)}" title="Remove video">×</button>`;
+            html += `<button type="button" class="thumb-preview-btn" data-type="video" data-src="${escapeHtml(src)}" title="Preview video">👁</button>`;
             html += `</div>`;
         });
         html += `</div></div>`;
@@ -261,6 +267,76 @@ function renderContent() {
 
     content.innerHTML = html;
     attachFormEvents();
+    
+    // Load video thumbnails after rendering
+    loadVideoThumbnails();
+    
+    // Load file sizes after rendering
+    loadFileSizes();
+}
+
+function loadVideoThumbnails() {
+    const content = document.getElementById("content");
+    if (!content) return;
+    
+    content.querySelectorAll(".video-thumb-container").forEach(container => {
+        const videoSrc = container.getAttribute("data-video-src");
+        if (!videoSrc) return;
+        
+        extractVideoThumbnail(videoSrc)
+            .then(thumbnailUrl => {
+                const placeholder = container.querySelector(".video-thumb-placeholder");
+                if (placeholder) {
+                    placeholder.style.display = "none";
+                }
+                // Remove existing thumbnail image if any
+                const existingImg = container.querySelector("img");
+                if (existingImg) {
+                    existingImg.remove();
+                }
+                const img = document.createElement("img");
+                img.src = thumbnailUrl;
+                img.style.width = "100%";
+                img.style.height = "100%";
+                img.style.objectFit = "cover";
+                img.style.display = "block";
+                container.appendChild(img);
+            })
+            .catch(err => {
+                console.warn("Failed to extract video thumbnail:", err);
+                const placeholder = container.querySelector(".video-thumb-placeholder");
+                if (placeholder) {
+                    placeholder.textContent = "Video";
+                    placeholder.style.display = "flex";
+                }
+            });
+    });
+}
+
+function loadFileSizes() {
+    const content = document.getElementById("content");
+    if (!content) return;
+    
+    content.querySelectorAll(".thumb-size").forEach(sizeElement => {
+        const src = sizeElement.getAttribute("data-src");
+        if (!src) {
+            sizeElement.textContent = "? KB";
+            return;
+        }
+        
+        getFileSize(src)
+            .then(bytes => {
+                if (bytes !== null && bytes !== undefined) {
+                    sizeElement.textContent = formatFileSize(bytes);
+                } else {
+                    sizeElement.textContent = "? KB";
+                }
+            })
+            .catch(err => {
+                console.warn("Failed to get file size for", src, ":", err);
+                sizeElement.textContent = "? KB";
+            });
+    });
 }
 
 function renderApp() {
